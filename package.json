@@ -1,0 +1,17 @@
+{
+    "name": "steam-with-friends",
+    "main": "/public/index.html",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "bower": "latest",
+        "express": "^4.16.4",
+        "steamapi": "latest"
+    },
+    "scripts": {
+        "start": "node app.js"
+    },
+    "engines": {
+        "node": "10.x"
+    }
+}

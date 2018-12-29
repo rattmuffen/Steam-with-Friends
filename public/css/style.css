@@ -1,0 +1,12 @@
+#mainContainer {
+	padding-top: 70px;
+}
+
+#resultsCard, #errorAlert {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#rndBtn, .storeBtn {
+	float: right;
+}

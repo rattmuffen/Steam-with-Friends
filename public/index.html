@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="steam-with-friends">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=0.75">
+		<title>Steam with Friends</title>
+
+		<!-- Scripts -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+
+		<script type="text/javascript" src="js/main.js"></script>
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+		<!-- Stylesheets -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+		<link href="css/style.css" rel="stylesheet">
+	</head>
+
+	<body id="main" ng-controller="steamCtrl">
+		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+			<a class="navbar-brand" href="#">
+				<i class="fab fa-steam"></i>
+				Steam with Friends
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<main id="mainContainer" role="main" class="container">
+
+			<!-- User details card -->
+			<div class="card">
+				<div class="card-header">
+					<h4>User Details</h4>
+				</div>
+				<div class="card-body">
+					<p class="card-text">
+						Input two different users Steam community URLs (ex <var>https://steamcommunity.com/id/rattmuffen/</var>) and press that big blue button!
+					</p>
+					<p>
+						<b>Note!</b>
+						Both profiles needs to be public!
+					</p>
+					<hr>
+					<form>
+						<div class="form-group">
+							<label for="user1Input">Community URL for first user</label>
+							<input type="text" class="form-control form-control-lg" id="user1Input" placeholder="Example input" ng-model="user1_url">
+						</div>
+						<div class="form-group">
+							<label for="user2Input">Community URL for second user</label>
+							<input type="text" class="form-control form-control-lg" id="user2Input" placeholder="Another input" ng-model="user2_url">
+						</div>
+					</form>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="getGames(user1_url, user2_url)" ng-disabled="user2_url == '' || user1_url == ''">
+						<span ng-if="!loading">Get shared Steam games!</span>
+						<div ng-if="loading">
+							<span class="spinner-border" role="status" aria-hidden="true"></span>
+							Loading...
+						</div>
+					</button>
+				</div>
+			</div>
+
+			<!-- List of games card -->
+			<div id="resultsCard" class="card" ng-if="result.length > 0 && !loading && errorCode == '' && errorDetails == ''">
+				<div class="card-header">
+					<h4>
+						Result - {{result.length}} shared games
+						<button id="rndBtn" type="button" class="btn btn-success pull-right" ng-click="selectRandomGame()">Select a random game!</button>
+					</h4>
+				</div>
+				<ul class="list-group list-group-flush">
+					<li ng-repeat="game in result | orderBy:'name'" class="list-group-item" ng-order>
+						<img ng-src="{{game.iconURL}}" />
+						<lead>{{game.name}}</lead>
+						<a target="_blank" ng-href="https://store.steampowered.com/app/{{game.appID}}" class="btn btn-outline-secondary storeBtn">
+							<i class="fab fa-steam-symbol"></i>
+							Open in Store
+						</a>
+					</li>
+				</ul>
+				<div class="card-footer text-muted text-center">
+					<a href="#" onclick="$(window).scrollTop(0);">Return to top</a>
+				</div>
+			</div>
+
+			<!-- Error alert! -->
+			<div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert" ng-if="!loading && errorCode != '' && errorDetails != ''">
+				<h4 class="alert-heading">
+					<i class="fas fa-exclamation-triangle"></i>
+					Something went terribly wrong!
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</h4>
+				<p>Error code: {{errorCode}}</p>
+				<p>{{errorDetails}}</p>
+				<hr>
+				<p class="mb-0">Please make sure that the Steam Community URLs provided are in the correct format! And that they are public!</p>
+			</div>
+
+			<!-- Random game modal -->
+			<div class="modal fade" id="randomGameModal" tabindex="-1" role="dialog" aria-labelledby="randomGameModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="randomGameModalLabel">Your random game is...</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<lead>{{randomGame.name}}</lead>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<a target="_blank" ng-href="https://store.steampowered.com/app/{{randomGame.appID}}" class="btn btn-primary">Open in Steam store</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>
