@@ -26,12 +26,27 @@ router.get('/getGames/:query', function (req, res) {
 				getUserGames(id2, function (user2) {
 					users.user2 = user2;
 					res.send(JSON.stringify(users));
+				}, function (error) {
+					sendError(res, 500, error);
 				})
+			}, function (error) {
+				sendError(res, 500, error);
 			})
+		}, function (error) {
+			sendError(res, 500, error);
 		})
+	}, function (error) {
+		sendError(res, 500, error);
 	})
 });
 
+function sendError(res, code, error) {
+	var errObj = {
+		'code': code,
+		'data': error
+	}
+	res.send(JSON.stringify(errObj));
+}
 
 function initAPI() {
 	if (!steam) {
@@ -40,14 +55,17 @@ function initAPI() {
 	}
 }
 
-function getId(url, callback) {
+function getId(url, success, fail) {
 	initAPI();
 	steam.resolve(url).then(id => {
-		callback(id)
+		success(id);
+	}).catch(err => {
+		console.log(err);
+		fail('Error getting user ID for profile ' + url + ': ' + err);
 	});
 }
 
-function getUserGames(id, callback) {
+function getUserGames(id, success, fail) {
 	initAPI();
 
 	steam.getUserSummary(id).then(summary => {
@@ -57,12 +75,18 @@ function getUserGames(id, callback) {
 		}
 		steam.getUserOwnedGames(id).then(games => {
 			user.games = games;
-			callback(user)
+			success(user)
+		}).catch(err => {
+			console.log(err);
+			fail('Could not get games for user ' + id + ': ' + err);
 		});
+	}).catch(err => {
+		console.log(err);
+		fail('Could not get user summary for user ' + id + ': ' + err);
 	});
 }
 
 app.use('/steam', router);
 var server = app.listen(port, function () {
-    console.log('Listening on port %d', server.address().port);
+		console.log('Listening on port %d', server.address().port);
 });

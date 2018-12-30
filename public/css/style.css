@@ -10,3 +10,7 @@
 #rndBtn, .storeBtn {
 	float: right;
 }
+
+.profileBtn {
+	padding-top: 10px;
+}

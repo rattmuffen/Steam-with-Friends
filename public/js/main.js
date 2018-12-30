@@ -1,14 +1,29 @@
 /* jslint node: true */
 'use strict';
 
+$(document).ready(function () {
+	// Bootstrap custom form validation.
+	var forms = document.getElementsByClassName('form-validate');
+	var validation = Array.prototype.filter.call(forms, function(form) {
+		form.addEventListener('submit', function(event) {
+			if (form.checkValidity() === false) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			form.classList.add('was-validated');
+		}, false);
+	});
+});
+
 var app = angular.module('steam-with-friends', []);
 
 app.controller('steamCtrl', function ($scope, $interval, $http) {
-	$scope.user1_url = 'https://steamcommunity.com/id/rattmuffen/';
-	$scope.user2_url = 'https://steamcommunity.com/id/nilshenrik/';
+	$scope.STEAM_BASE_URL = 'https://steamcommunity.com/id/'
+	$scope.user1_profile = 'rattmuffen';
+	$scope.user2_profile = 'nilshenrik';
 
-	$scope.user1_profile = '';
-	$scope.user2_profile = '';
+	$scope.user1;
+	$scope.user2;
 
 	$scope.result = [];
 	$scope.errorCode = '';
@@ -17,27 +32,29 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 
 	$scope.randomGame = '';
 
-	$scope.getGames = function (url1, url2) {
+	$scope.getGames = function () {
+		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile)
+
 		$scope.result = [];
 		$scope.loading = true;
-		
+
 		var queryObj = {
-			"url1": url1,
-			"url2": url2
+			"url1": $scope.STEAM_BASE_URL + $scope.user1_profile,
+			"url2": $scope.STEAM_BASE_URL + $scope.user2_profile
 		}
 
 		var query = 'steam/getGames/' + encodeURIComponent(JSON.stringify(queryObj));
 		$http.get(query)
 			.then(function(resp) {
 				console.log(resp);
-				if (resp.status == 200 && resp.data) {
-					$scope.user1_profile = resp.data.user1.profile;
-					$scope.user2_profile = resp.data.user2.profile;
+				if (resp.status == 200 && resp.data.user1 && resp.data.user2) {
+					$scope.user1 = resp.data.user1;
+					$scope.user2 = resp.data.user2;
 
 					getSharedGames(resp.data.user1.games, resp.data.user2.games);
 				} else {
-					$scope.errorCode = resp.status;
-					$scope.errorDetails = resp.data;
+					$scope.errorCode = (resp.status != 200 ? resp.status : resp.data.code);
+					$scope.errorDetails = (resp.status != 200 ? resp.data : resp.data.data);
 					$scope.loading = false;
 				}
 			});
