@@ -51,7 +51,7 @@
 		<main id="mainContainer" role="main" class="container">
 
 			<!-- User details card -->
-			<div class="card">
+			<div class="card shadow-sm">
 				<div class="card-header">
 					<h4>User Details</h4>
 				</div>
@@ -75,7 +75,7 @@
 								</div>
 								<input id="user1Input" type="text" class="form-control form-control-lg"  placeholder="A Steam profile" ng-model="user1_profile" required>
 								<div class="input-group-append">
-									<a ng-href="{{STEAM_BASE_URL}}{{user1_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn" title="Open profile in Steam">
+									<a ng-href="{{STEAM_BASE_URL}}{{user1_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn rounded-right" title="Open profile in Steam">
 										<i class="fab fa-steam-square fa-lg"></i>
 									</a>
 								</div>
@@ -92,7 +92,7 @@
 								</div>
 								<input id="user2Input" type="text" class="form-control form-control-lg"  placeholder="Another Steam profile" ng-model="user2_profile" aria-describedby="urlPrepend2" required>
 								<div class="input-group-append">
-									<a ng-href="{{STEAM_BASE_URL}}{{user2_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn" title="Open profile in Steam">
+									<a ng-href="{{STEAM_BASE_URL}}{{user2_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn rounded-right" title="Open profile in Steam">
 										<i class="fab fa-steam-square fa-lg"></i>
 									</a>
 								</div>
@@ -115,7 +115,7 @@
 			<!-- Profiles cards -->
 			<div id="profilesCards" class="row" ng-if="!loading && errorCode == '' && errorDetails == '' && user1 && user2">
 				<div class="col-sm-6">
-					<div class="card profilesCard">
+					<div class="card profilesCard shadow-sm">
 						<div class="card-header">
 							<h4>
 								{{user1.profile.nickname}}
@@ -133,7 +133,7 @@
 					</div>
 				</div>
 				<div class="col-sm-6">
-					<div class="card profilesCard">
+					<div class="card profilesCard shadow-sm">
 						<div class="card-header">
 							<h4>
 								{{user2.profile.nickname}}
@@ -153,23 +153,54 @@
 			</div>
 
 			<!-- List of games card -->
-			<div id="resultsCard" class="card" ng-if="result.length > 0 && !loading && errorCode == '' && errorDetails == ''">
+			<div id="resultsCard" class="card shadow-sm" ng-if="result.length > 0 && !loading && errorCode == '' && errorDetails == ''">
 				<div class="card-header">
 					<h4>
 						Result - {{result.length}} shared games
 						<button id="rndBtn" type="button" class="btn btn-success pull-right" ng-click="selectRandomGame()">Select a random game!</button>
 					</h4>
 				</div>
-				<ul class="list-group list-group-flush">
-					<li ng-repeat="game in result | orderBy:'name'" class="list-group-item" ng-order>
-						<img ng-src="{{game.iconURL}}" />
-						<lead>{{game.name}}</lead>
-						<a target="_blank" ng-href="https://store.steampowered.com/app/{{game.appID}}" class="btn btn-outline-secondary storeBtn">
-							<i class="fab fa-steam-symbol"></i>
-							Open in Store
-						</a>
-					</li>
-				</ul>
+				<div class="card-body">
+					<form>
+						<div class="form-row">
+							<div class="form-group col-md-10">
+								<label for="sortSelect">Sort games</label>
+								<select class="custom-select" id="sortSelect" ng-click="updateSortOrder()">
+									<option ng-repeat="type in sortTypes" value="{{type.field}}" ng-selected="{{sortField == type.field}}">
+										{{getSortName(type)}}
+									</option>
+								</select>
+							</div>
+							<div class="form-group col-md-2">
+								<label for="orderSelect">Order</label>
+								<select class="custom-select" id="orderSelect" ng-click="updateSortOrder()">
+									<option value="false" selected>Ascending</option>
+									<option value="true">Descending</option>
+								</select>
+							</div>
+						</div>
+					</form>
+					<hr>
+					<div class="custom-control custom-switch">
+					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed">
+					  <label class="custom-control-label" for="unplayedSwitch">Show only games neither has played</label>
+					</div>
+					<small>{{getFilteredGames(result).length}} games in current filter</small>
+				</div>
+				<div class="list-group list-group-flush">
+					<a ng-repeat="game in result | orderBy:sortField:reverse | filter:inFilter" ng-href="https://store.steampowered.com/app/{{game.appID}}" target="_href" class="list-group-item list-group-item-action flex-row d-flex gameListItem" title="Open {{game.name}} in Steam store">
+						<div class="d-flex w-25">
+							<img class="gameLogo" ng-src="{{game.logoURL}}" />
+						</div>
+				    <div class="d-flex w-100">
+							<h5 class="gameTitle">
+								{{game.name}}
+							</h5>
+							<small class="text-muted">{{user1.profile.nickname}}: {{game.user1PlayTime}} minutes</small>
+							<small class="text-muted">{{user2.profile.nickname}}: {{game.user2PlayTime}} minutes</small>
+				    </div>
+				  </a>
+				</div>
 				<div class="card-footer text-muted text-center">
 					<a href="#" onclick="$(window).scrollTop(0);">Return to top</a>
 				</div>

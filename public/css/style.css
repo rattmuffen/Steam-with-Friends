@@ -23,3 +23,13 @@
 	padding-right: 10px;
 	margin-bottom: 0px;
 }
+
+.gameTitle {
+	width: 100%;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.gameListItem {
+	padding: 0px;
+}

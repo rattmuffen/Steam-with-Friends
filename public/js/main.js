@@ -32,6 +32,19 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 
 	$scope.randomGame = '';
 
+	$scope.filter = {
+		unplayed: false
+	};
+
+	$scope.sortTypes = [
+		{name : 'alphabetically', field: 'name'},
+		{name : 'by $user1 play time', field: 'user1PlayTime'},
+		{name : 'by $user2 play time', field: 'user2PlayTime'}
+	];
+
+	$scope.sortField = 'name';
+	$scope.reverse = false;
+
 	$scope.getGames = function () {
 		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile)
 
@@ -51,7 +64,7 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 					$scope.user1 = resp.data.user1;
 					$scope.user2 = resp.data.user2;
 
-					getSharedGames(resp.data.user1.games, resp.data.user2.games);
+					getSharedGames($scope.user1.games, $scope.user2.games);
 				} else {
 					$scope.errorCode = (resp.status != 200 ? resp.status : resp.data.code);
 					$scope.errorDetails = (resp.status != 200 ? resp.data : resp.data.data);
@@ -61,18 +74,50 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	}
 
 	$scope.selectRandomGame = function() {
-		var rndIndex = Math.floor(Math.random() * $scope.result.length);
-		$scope.randomGame = $scope.result[rndIndex];
+		var filteredGames = $scope.getFilteredGames();
+		var rndIndex = Math.floor(Math.random() * filteredGames.length);
+		$scope.randomGame = filteredGames[rndIndex];
 
-		$('#randomGameModal').modal('toggle')
+		$('#randomGameModal').modal('toggle');
+	}
+
+	$scope.inFilter = function(game) {
+		if ($scope.filter.unplayed) {
+			return (game.user1PlayTime == 0 && game.user2PlayTime == 0);
+		}
+		return true;
+	}
+
+	$scope.getFilteredGames = function() {
+		var res = [];
+		for (var i = 0; i < $scope.result.length; i++) {
+			var game = $scope.result[i];
+			if ($scope.inFilter(game)) {
+				res.push(game);
+			}
+		}
+		return res;
+	}
+
+	$scope.getSortName = function(sort) {
+		return sort.name.replace('$user1', $scope.user1.profile.nickname).replace('$user2', $scope.user2.profile.nickname);
+	}
+
+	$scope.updateSortOrder = function() {
+		$scope.sortField = $('#sortSelect').val();
+		$scope.reverse = $('#orderSelect').val() == 'true';
 	}
 
 	function getSharedGames(gameList1, gameList2) {
 		var sharedGames = [];
 		for (var i = 0; i < gameList1.length; i++) {
-			var game = gameList1[i];
-			if (hasGame(game, gameList2)) {
-				sharedGames.push(game);
+			var user1Game = gameList1[i];
+			var user2Game = hasGame(user1Game, gameList2)
+			if (user2Game) {
+				user1Game.user1PlayTime = user1Game.playTime;
+				user1Game.user2PlayTime = user2Game.playTime;
+
+				sharedGames.push(user1Game);
 			}
 		}
 
@@ -84,9 +129,9 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 		for (var i = 0; i < gameList.length; i++) {
 			var g = gameList[i];
 			if (game.appID == g.appID) {
-					return true;
+					return g;
 			}
 		}
-		return false;
+		return null;
 	}
 });
