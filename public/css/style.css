@@ -2,7 +2,7 @@
 	padding-top: 70px;
 }
 
-#resultsCard, #errorAlert {
+#resultsCard, #errorAlert, #profilesCards {
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
@@ -13,4 +13,13 @@
 
 .profileBtn {
 	padding-top: 10px;
+}
+
+.profileImg {
+	margin-bottom: 0px;
+}
+
+.profileImg > img {
+	padding-right: 10px;
+	margin-bottom: 0px;
 }

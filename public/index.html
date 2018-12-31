@@ -23,7 +23,7 @@
 		<!-- Stylesheets -->
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-		<link href="css/style.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/style.css">
 	</head>
 
 	<body id="main" ng-controller="steamCtrl">
@@ -73,7 +73,7 @@
 										{{STEAM_BASE_URL}}
 									</span>
 								</div>
-								<input id="user1Input" type="text" class="form-control form-control-lg"  placeholder="Another input" ng-model="user1_profile" required>
+								<input id="user1Input" type="text" class="form-control form-control-lg"  placeholder="A Steam profile" ng-model="user1_profile" required>
 								<div class="input-group-append">
 									<a ng-href="{{STEAM_BASE_URL}}{{user1_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn" title="Open profile in Steam">
 										<i class="fab fa-steam-square fa-lg"></i>
@@ -90,7 +90,7 @@
 								<div class="input-group-prepend">
 									<span class="input-group-text" id="urlPrepend2">{{STEAM_BASE_URL}}</span>
 								</div>
-								<input id="user2Input" type="text" class="form-control form-control-lg"  placeholder="Another input" ng-model="user2_profile" aria-describedby="urlPrepend2" required>
+								<input id="user2Input" type="text" class="form-control form-control-lg"  placeholder="Another Steam profile" ng-model="user2_profile" aria-describedby="urlPrepend2" required>
 								<div class="input-group-append">
 									<a ng-href="{{STEAM_BASE_URL}}{{user2_profile}}" target="_blank" class="btn btn-outline-secondary profileBtn" title="Open profile in Steam">
 										<i class="fab fa-steam-square fa-lg"></i>
@@ -109,6 +109,46 @@
 							</div>
 						</button>
 					</form>
+				</div>
+			</div>
+
+			<!-- Profiles cards -->
+			<div id="profilesCards" class="row" ng-if="!loading && errorCode == '' && errorDetails == '' && user1 && user2">
+				<div class="col-sm-6">
+					<div class="card profilesCard">
+						<div class="card-header">
+							<h4>
+								{{user1.profile.nickname}}
+								<span class="badge badge-secondary">{{user1.profile.countryCode}}</span>
+							</h4>
+						</div>
+						<figure class="figure profileImg">
+						  <img ng-src="{{user1.profile.avatar.large}}" class="figure-img img-fluid rounded float-left" alt="Profile picture">
+						  <figcaption class="figure-caption text-left">
+								Last logoff: {{user1.profile.lastLogOff * 1000 | date:'medium'}}
+								<br>
+								Number of games: {{user1.games.length}}
+							</figcaption>
+						</figure>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="card profilesCard">
+						<div class="card-header">
+							<h4>
+								{{user2.profile.nickname}}
+								<span class="badge badge-secondary">{{user2.profile.countryCode}}</span>
+							</h4>
+						</div>
+						<figure class="figure profileImg">
+						  <img ng-src="{{user2.profile.avatar.large}}" class="figure-img img-fluid rounded float-left" alt="Profile picture">
+						  <figcaption class="figure-caption text-left">
+								Last logoff: {{user2.profile.lastLogOff * 1000 | date:'medium'}}
+								<br>
+								Number of games: {{user2.games.length}}
+							</figcaption>
+						</figure>
+					</div>
 				</div>
 			</div>
 
