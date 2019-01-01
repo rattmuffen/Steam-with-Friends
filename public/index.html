@@ -156,7 +156,7 @@
 			<div id="resultsCard" class="card shadow-sm" ng-if="sharedGames.length > 0 && !loading && errorCode == '' && errorDetails == ''">
 				<div class="card-header">
 					<h4>
-						Result - {{sharedGames.length}} shared games
+						{{sharedGames.length}} shared games
 						<button id="rndBtn" type="button" class="btn btn-success pull-right" ng-click="selectRandomGame()">Select a random game!</button>
 					</h4>
 				</div>
@@ -174,8 +174,8 @@
 							<div class="form-group col-md-2">
 								<label for="orderSelect">Order</label>
 								<select class="custom-select" id="orderSelect" ng-click="updateSortOrder()">
-									<option value="false" selected>Ascending</option>
-									<option value="true">Descending</option>
+									<option value="false" selected>ascending</option>
+									<option value="true">descending</option>
 								</select>
 							</div>
 						</div>
@@ -184,6 +184,10 @@
 					<div class="custom-control custom-switch">
 					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed">
 					  <label class="custom-control-label" for="unplayedSwitch">Show only games neither has played</label>
+					</div>
+					<div class="custom-control custom-switch">
+					  <input type="checkbox" class="custom-control-input" id="multiplayerSwitch" ng-model="filter.multiplayer">
+					  <label class="custom-control-label" for="multiplayerSwitch">Show only multiplayer games</label>
 					</div>
 					<small>{{getFilteredGames(sharedGames).length}} games in current filter</small>
 				</div>

@@ -33,7 +33,8 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.randomGame = '';
 
 	$scope.filter = {
-		unplayed: false
+		unplayed: false,
+		multiplayer: false
 	};
 
 	$scope.sortTypes = [
@@ -44,6 +45,13 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 
 	$scope.sortField = 'name';
 	$scope.reverse = false;
+
+	$scope.multiplayerCategories = [
+		{id: 9, description: "Co-op"},
+		{id: 1, description: "Multi-player"},
+		{id: 27, description: "Cross-Platform Multiplayer"},
+		{id: 38, description: "Online Co-op"}
+	]
 
 	$scope.getGames = function () {
 		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile)
@@ -83,10 +91,15 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	}
 
 	$scope.inFilter = function(game) {
+		var inFilter = true;
 		if ($scope.filter.unplayed) {
-			return (game.user1PlayTime == 0 && game.user2PlayTime == 0);
+			inFilter = (game.user1PlayTime == 0 && game.user2PlayTime == 0);
 		}
-		return true;
+
+		if (inFilter && $scope.filter.multiplayer) {
+			inFilter = hasCategories(game, $scope.multiplayerCategories)
+		}
+		return inFilter;
 	}
 
 	$scope.getFilteredGames = function() {
@@ -107,5 +120,21 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.updateSortOrder = function() {
 		$scope.sortField = $('#sortSelect').val();
 		$scope.reverse = $('#orderSelect').val() == 'true';
+	}
+
+	function hasCategories(game, categories) {
+		if (!game.details || !game.details.categories) {
+			return false;
+		}
+
+		for (var i = 0; i < game.details.categories.length; i++) {
+			var category = game.details.categories[i];
+			for (var j = 0; j < $scope.multiplayerCategories.length; j++) {
+				if ($scope.multiplayerCategories[j].id == category.id) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 });
