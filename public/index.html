@@ -153,10 +153,10 @@
 			</div>
 
 			<!-- List of games card -->
-			<div id="resultsCard" class="card shadow-sm" ng-if="result.length > 0 && !loading && errorCode == '' && errorDetails == ''">
+			<div id="resultsCard" class="card shadow-sm" ng-if="sharedGames.length > 0 && !loading && errorCode == '' && errorDetails == ''">
 				<div class="card-header">
 					<h4>
-						Result - {{result.length}} shared games
+						Result - {{sharedGames.length}} shared games
 						<button id="rndBtn" type="button" class="btn btn-success pull-right" ng-click="selectRandomGame()">Select a random game!</button>
 					</h4>
 				</div>
@@ -185,10 +185,10 @@
 					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed">
 					  <label class="custom-control-label" for="unplayedSwitch">Show only games neither has played</label>
 					</div>
-					<small>{{getFilteredGames(result).length}} games in current filter</small>
+					<small>{{getFilteredGames(sharedGames).length}} games in current filter</small>
 				</div>
 				<div class="list-group list-group-flush">
-					<a ng-repeat="game in result | orderBy:sortField:reverse | filter:inFilter" ng-href="https://store.steampowered.com/app/{{game.appID}}" target="_href" class="list-group-item list-group-item-action flex-row d-flex gameListItem" title="Open {{game.name}} in Steam store">
+					<a ng-repeat="game in sharedGames | orderBy:sortField:reverse | filter:inFilter" ng-href="https://store.steampowered.com/app/{{game.appID}}" target="_href" class="list-group-item list-group-item-action flex-row d-flex gameListItem" title="Open {{game.name}} in Steam store">
 						<div class="d-flex w-25">
 							<img class="gameLogo" ng-src="{{game.logoURL}}" />
 						</div>

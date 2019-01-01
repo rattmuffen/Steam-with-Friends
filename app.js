@@ -25,6 +25,8 @@ router.get('/getGames/:query', function (req, res) {
 			getId(query.url2, function (id2) {
 				getUserGames(id2, function (user2) {
 					users.user2 = user2;
+					users.sharedGames = getSharedGames(user1.games, user2.games);
+
 					res.send(JSON.stringify(users));
 				}, function (error) {
 					sendError(res, 500, error);
@@ -84,6 +86,31 @@ function getUserGames(id, success, fail) {
 		console.log(err);
 		fail('Could not get user summary for user ' + id + ': ' + err);
 	});
+}
+
+function getSharedGames(gameList1, gameList2) {
+	var sharedGames = [];
+	for (var i = 0; i < gameList1.length; i++) {
+		var user1Game = gameList1[i];
+		var user2Game = hasGame(user1Game, gameList2)
+		if (user2Game) {
+			user1Game.user1PlayTime = user1Game.playTime;
+			user1Game.user2PlayTime = user2Game.playTime;
+
+			sharedGames.push(user1Game);
+		}
+	}
+	return sharedGames;
+}
+
+function hasGame(game, gameList) {
+	for (var i = 0; i < gameList.length; i++) {
+		var g = gameList[i];
+		if (game.appID == g.appID) {
+				return g;
+		}
+	}
+	return null;
 }
 
 app.use('/steam', router);

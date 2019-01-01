@@ -25,7 +25,7 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.user1;
 	$scope.user2;
 
-	$scope.result = [];
+	$scope.sharedGames = [];
 	$scope.errorCode = '';
 	$scope.errorDetails = '';
 	$scope.loading = false;
@@ -48,7 +48,7 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.getGames = function () {
 		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile)
 
-		$scope.result = [];
+		$scope.sharedGames = [];
 		$scope.loading = true;
 
 		var queryObj = {
@@ -60,11 +60,12 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 		$http.get(query)
 			.then(function(resp) {
 				console.log(resp);
-				if (resp.status == 200 && resp.data.user1 && resp.data.user2) {
+				if (resp.status == 200 && resp.data.user1 && resp.data.user2 && resp.data.sharedGames) {
 					$scope.user1 = resp.data.user1;
 					$scope.user2 = resp.data.user2;
+					$scope.sharedGames = resp.data.sharedGames;
 
-					getSharedGames($scope.user1.games, $scope.user2.games);
+					$scope.loading = false;
 				} else {
 					$scope.errorCode = (resp.status != 200 ? resp.status : resp.data.code);
 					$scope.errorDetails = (resp.status != 200 ? resp.data : resp.data.data);
@@ -90,8 +91,8 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 
 	$scope.getFilteredGames = function() {
 		var res = [];
-		for (var i = 0; i < $scope.result.length; i++) {
-			var game = $scope.result[i];
+		for (var i = 0; i < $scope.sharedGames.length; i++) {
+			var game = $scope.sharedGames[i];
 			if ($scope.inFilter(game)) {
 				res.push(game);
 			}
@@ -106,32 +107,5 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.updateSortOrder = function() {
 		$scope.sortField = $('#sortSelect').val();
 		$scope.reverse = $('#orderSelect').val() == 'true';
-	}
-
-	function getSharedGames(gameList1, gameList2) {
-		var sharedGames = [];
-		for (var i = 0; i < gameList1.length; i++) {
-			var user1Game = gameList1[i];
-			var user2Game = hasGame(user1Game, gameList2)
-			if (user2Game) {
-				user1Game.user1PlayTime = user1Game.playTime;
-				user1Game.user2PlayTime = user2Game.playTime;
-
-				sharedGames.push(user1Game);
-			}
-		}
-
-		$scope.result = sharedGames;
-		$scope.loading = false;
-	}
-
-	function hasGame(game, gameList) {
-		for (var i = 0; i < gameList.length; i++) {
-			var g = gameList[i];
-			if (game.appID == g.appID) {
-					return g;
-			}
-		}
-		return null;
 	}
 });
