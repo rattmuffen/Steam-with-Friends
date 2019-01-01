@@ -4,9 +4,10 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "bower": "latest",
+        "mongodb": "latest",
         "express": "^4.16.4",
-        "steamapi": "latest"
+        "steamapi": "latest",
+        "async": "latest"
     },
     "scripts": {
         "start": "node app.js"

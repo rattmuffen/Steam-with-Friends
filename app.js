@@ -3,6 +3,8 @@
 
 const express = require('express')
 const SteamAPI = require('steamapi');
+const db = require('./db.js');
+const async = require('async');
 const steam_api_key = process.env.STEAM_API_KEY || require('./conf/steam.json').api_key;
 const app = express()
 app.use(express.static(__dirname + '/public'));
@@ -25,9 +27,12 @@ router.get('/getGames/:query', function (req, res) {
 			getId(query.url2, function (id2) {
 				getUserGames(id2, function (user2) {
 					users.user2 = user2;
-					users.sharedGames = getSharedGames(user1.games, user2.games);
-
-					res.send(JSON.stringify(users));
+					getSharedGames(user1.games, user2.games, function (sharedGames) {
+						users.sharedGames = sharedGames;
+						res.send(JSON.stringify(users));
+					}, function (error) {
+						sendError(res, 500, error);
+					});
 				}, function (error) {
 					sendError(res, 500, error);
 				})
@@ -88,7 +93,17 @@ function getUserGames(id, success, fail) {
 	});
 }
 
-function getSharedGames(gameList1, gameList2) {
+function getGameDetails(game, success, fail) {
+	initAPI();
+
+	steam.getGameDetails(game.appID).then(details => {
+		success(details);
+	}).catch(err => {
+		fail('Could not get game details for ' + game.name + ': ' + err);
+	});
+}
+
+function getSharedGames(gameList1, gameList2, success, fail) {
 	var sharedGames = [];
 	for (var i = 0; i < gameList1.length; i++) {
 		var user1Game = gameList1[i];
@@ -100,7 +115,44 @@ function getSharedGames(gameList1, gameList2) {
 			sharedGames.push(user1Game);
 		}
 	}
-	return sharedGames;
+
+	// For each shared game:
+	// If exists in details DB: get details from DB.
+	// If not exist in details DB: get details from Steam API and save to DB.
+	async.each(sharedGames, function(game, finished) {
+		var appID = game.appID;
+		db.get(appID, function (result) {
+			var existsInDB = (result.length == 1);
+			if (existsInDB) {
+				var details = result[0].details;
+				game.details = details;
+				game.details.retreivedFromDB = true;
+
+				finished();
+			} else {
+				getGameDetails(game, function (details) {
+					game.details = details;
+					game.details.retreivedFromDB = false;
+
+					db.add(appID, details, function () {
+						finished();
+					}, function (error) {
+						fail(error);
+					});
+				}, function (error) {
+					console.log('Could not get game details for ' + game.name + ': ' + error);
+					finished();
+				});
+			}
+		}, function (error) {
+			fail(error);
+		});
+	}, function (err) {
+		if (err) {
+			fail(err);
+		}
+		success(sharedGames);
+	});
 }
 
 function hasGame(game, gameList) {
