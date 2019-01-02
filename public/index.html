@@ -191,18 +191,37 @@
 					</div>
 					<small>{{getFilteredGames(sharedGames).length}} games in current filter</small>
 				</div>
-				<div class="list-group list-group-flush">
-					<a ng-repeat="game in sharedGames | orderBy:sortField:reverse | filter:inFilter" ng-href="https://store.steampowered.com/app/{{game.appID}}" target="_href" class="list-group-item list-group-item-action flex-row d-flex gameListItem" title="Open {{game.name}} in Steam store">
-						<div class="d-flex w-25">
-							<img class="gameLogo" ng-src="{{game.logoURL}}" />
+				<div class="list-group list-group-flush list-group-striped">
+					<a class="list-group-item list-group-item-action gameListItem" ng-repeat="game in sharedGames | orderBy:sortField:reverse | filter:inFilter" ng-href="https://store.steampowered.com/app/{{game.appID}}" target="_href" title="Open {{game.name}} in Steam store">
+						<div class="container-fluid">
+						  <div class="row">
+						    <div class="col logoCol">
+						      <img class="mb-1" ng-src="{{game.logoURL}}">
+						    </div>
+						    <div class="col col-6 titleCol">
+						      <h5>{{game.name}}</h5>
+						    </div>
+						    <div class="col text-right">
+									<ul class="list-unstyled">
+										<li><small><b>Released:</b> {{game.details.release_date.date}}</small></li>
+										<li><small><b>Metacritic score:</b> {{game.details.metacritic.score}}</small></li>
+										<li><small><b>Recommendations:</b> {{game.details.recommendations.total}}</small></li>
+									</ul>
+						    </div>
+						  </div>
 						</div>
-				    <div class="d-flex w-100">
-							<h5 class="gameTitle">
-								{{game.name}}
-							</h5>
-							<small class="text-muted">{{user1.profile.nickname}}: {{game.user1PlayTime}} minutes</small>
-							<small class="text-muted">{{user2.profile.nickname}}: {{game.user2PlayTime}} minutes</small>
-				    </div>
+						<div class="gameDetails">
+					    <small class="mb-1 text-muted">
+									{{game.details.short_description}}
+							</small>
+							<ul class="list-inline categoryList">
+							  <li ng-repeat="category in game.details.categories"class="list-inline-item">
+									<small><span class="badge badge-light">{{category.description}}</span></small>
+								</li>
+							</ul>
+							<span class="badge badge-light">{{user1.profile.nickname}} playtime: {{game.user1PlayTime}} minutes</span>
+							<span class="badge badge-light">{{user2.profile.nickname}} playtime: {{game.user2PlayTime}} minutes</span>
+						</div>
 				  </a>
 				</div>
 				<div class="card-footer text-muted text-center">

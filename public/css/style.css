@@ -33,3 +33,23 @@
 .gameListItem {
 	padding: 0px;
 }
+
+.logoCol {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.titleCol {
+	padding-top: 20px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.gameDetails {
+	padding-left: 15px;
+	padding-bottom: 20px;
+}
+
+.categoryList {
+	margin-bottom: 5px;
+}
