@@ -10,6 +10,7 @@ Backend:
 * [node-steamapi](https://github.com/xDimGG/node-steamapi)
 * [node-mongodb](https://github.com/mongodb/node-mongodb-native)
 * [async](http://caolan.github.io/async/)
+* [moment.js](https://momentjs.com/)
 
 Frontend:
 * [angularjs](https://angularjs.org/) (Yes, the old one!)

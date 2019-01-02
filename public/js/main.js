@@ -40,7 +40,10 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.sortTypes = [
 		{name : 'alphabetically', field: 'name'},
 		{name : 'by $user1 play time', field: 'user1PlayTime'},
-		{name : 'by $user2 play time', field: 'user2PlayTime'}
+		{name : 'by $user2 play time', field: 'user2PlayTime'},
+		{name : 'by number of recommendations', field: 'details.redommendations.total'},
+		{name : 'by release date', field: 'details.release_date.dateEpoch'},
+		{name : 'by Metacritic rating', field: 'details.metacritic.score'},
 	];
 
 	$scope.sortField = 'name';
@@ -120,6 +123,12 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.updateSortOrder = function() {
 		$scope.sortField = $('#sortSelect').val();
 		$scope.reverse = $('#orderSelect').val() == 'true';
+	}
+
+	$scope.getEpoch = function(dateStr) {
+		console.log('get epoch for ' + dateStr);
+
+		return dateStr;
 	}
 
 	function hasCategories(game, categories) {

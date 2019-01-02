@@ -7,7 +7,8 @@
         "mongodb": "latest",
         "express": "^4.16.4",
         "steamapi": "latest",
-        "async": "latest"
+        "async": "latest",
+        "moment": "latest"
     },
     "scripts": {
         "start": "node app.js"

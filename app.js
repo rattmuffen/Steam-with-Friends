@@ -5,6 +5,7 @@ const express = require('express')
 const SteamAPI = require('steamapi');
 const db = require('./db.js');
 const async = require('async');
+const moment = require('moment')
 const steam_api_key = process.env.STEAM_API_KEY || require('./conf/steam.json').api_key;
 const app = express()
 app.use(express.static(__dirname + '/public'));
@@ -127,12 +128,14 @@ function getSharedGames(gameList1, gameList2, success, fail) {
 				var details = result[0].details;
 				game.details = details;
 				game.details.retreivedFromDB = true;
+				game.details.release_date.dateEpoch = moment(game.details.release_date.date).unix();
 
 				finished();
 			} else {
 				getGameDetails(game, function (details) {
 					game.details = details;
 					game.details.retreivedFromDB = false;
+					game.details.release_date.dateEpoch = moment(game.details.release_date.date).unix();
 
 					db.add(appID, details, function () {
 						finished();
