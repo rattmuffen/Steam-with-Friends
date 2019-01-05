@@ -17,10 +17,11 @@ $(document).ready(function () {
 
 var app = angular.module('steam-with-friends', []);
 
-app.controller('steamCtrl', function ($scope, $interval, $http) {
-	$scope.STEAM_BASE_URL = 'https://steamcommunity.com/id/'
-	$scope.user1_profile = 'rattmuffen';
-	$scope.user2_profile = 'nilshenrik';
+app.controller('steamCtrl', function ($scope, $window, $http) {
+	$scope.SETTING_KEY = 'steam-setting';
+	$scope.STEAM_BASE_URL = 'https://steamcommunity.com/id/';
+	$scope.user1_profile = '';
+	$scope.user2_profile = '';
 
 	$scope.user1;
 	$scope.user2;
@@ -57,7 +58,11 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	]
 
 	$scope.getGames = function () {
-		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile)
+		if ($scope.user1_profile.trim() == '' ||  $scope.user2_profile.trim() == '') {
+			return;
+		}
+
+		console.log('GetGames for ' + $scope.user1_profile + ' and ' + $scope.user2_profile);
 
 		$scope.sharedGames = [];
 		$scope.loading = true;
@@ -123,12 +128,31 @@ app.controller('steamCtrl', function ($scope, $interval, $http) {
 	$scope.updateSortOrder = function() {
 		$scope.sortField = $('#sortSelect').val();
 		$scope.reverse = $('#orderSelect').val() == 'true';
+
+		$scope.saveSettings();
 	}
 
-	$scope.getEpoch = function(dateStr) {
-		console.log('get epoch for ' + dateStr);
+	$scope.saveSettings = function() {
+		var obj = {
+			user1_profile: $scope.user1_profile,
+			user2_profile: $scope.user2_profile,
+			filter: $scope.filter,
+			sortField : $scope.sortField,
+			reverse : $scope.reverse
+		}
 
-		return dateStr;
+		$window.localStorage.setItem($scope.SETTING_KEY, JSON.stringify(obj));
+	}
+
+	$scope.readSettings = function() {
+		var obj = JSON.parse($window.localStorage.getItem($scope.SETTING_KEY));
+		if (obj) {
+			$scope.user1_profile = obj.user1_profile;
+			$scope.user2_profile = obj.user2_profile;
+			$scope.filter = obj.filter;
+			$scope.sortField = obj.sortField;
+			$scope.reverse = obj.reverse;
+		}
 	}
 
 	function hasCategories(game, categories) {

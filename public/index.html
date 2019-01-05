@@ -26,7 +26,7 @@
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 
-	<body id="main" ng-controller="steamCtrl">
+	<body id="main" ng-controller="steamCtrl" ng-init="readSettings()">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 			<a class="navbar-brand" href="#">
 				<i class="fab fa-steam"></i>
@@ -174,19 +174,19 @@
 							<div class="form-group col-md-2">
 								<label for="orderSelect">Order</label>
 								<select class="custom-select" id="orderSelect" ng-click="updateSortOrder()">
-									<option value="false" selected>ascending</option>
-									<option value="true">descending</option>
+									<option value="false" ng-selected="{{!reverse}}">ascending</option>
+									<option value="true" ng-selected="{{reverse}}">descending</option>
 								</select>
 							</div>
 						</div>
 					</form>
 					<hr>
 					<div class="custom-control custom-switch">
-					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed">
+					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed" ng-click="saveSettings()">
 					  <label class="custom-control-label" for="unplayedSwitch">Show only games neither has played</label>
 					</div>
 					<div class="custom-control custom-switch">
-					  <input type="checkbox" class="custom-control-input" id="multiplayerSwitch" ng-model="filter.multiplayer">
+					  <input type="checkbox" class="custom-control-input" id="multiplayerSwitch" ng-model="filter.multiplayer" ng-click="saveSettings()">
 					  <label class="custom-control-label" for="multiplayerSwitch">Show only multiplayer games</label>
 					</div>
 					<small>{{getFilteredGames(sharedGames).length}} games in current filter</small>
