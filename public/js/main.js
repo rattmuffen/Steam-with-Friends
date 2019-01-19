@@ -15,7 +15,7 @@ $(document).ready(function () {
 	});
 });
 
-var app = angular.module('steam-with-friends', []);
+var app = angular.module('steam-with-friends', ['selectize']);
 
 app.controller('steamCtrl', function ($scope, $window, $http) {
 	$scope.SETTING_KEY = 'steam-setting';
@@ -27,6 +27,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 	$scope.user2;
 
 	$scope.sharedGames = [];
+	$scope.allCategories = [];
 	$scope.errorCode = '';
 	$scope.errorDetails = '';
 	$scope.loading = false;
@@ -35,7 +36,8 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 
 	$scope.filter = {
 		unplayed: false,
-		multiplayer: false
+		multiplayer: false,
+		categories: []
 	};
 
 	$scope.sortTypes = [
@@ -50,12 +52,20 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 	$scope.sortField = 'name';
 	$scope.reverse = false;
 
-	$scope.multiplayerCategories = [
-		{id: 9, description: "Co-op"},
-		{id: 1, description: "Multi-player"},
-		{id: 27, description: "Cross-Platform Multiplayer"},
-		{id: 38, description: "Online Co-op"}
-	]
+	$scope.multiplayerCategories = [ '9', '1' , '27', '38' ];
+	$scope.selectizeConfig = {
+		plugins: ['remove_button'],
+		create: false,
+		sortField: {field: 'description'},
+		valueField: 'id',
+		searchField: 'description',
+		selectOnTab: true,
+		placeholder: "Select categories",
+		dataAttr: 'description',
+		labelField: 'description',
+		maxItems: null,
+		closeAfterSelect: true
+	}
 
 	$scope.getGames = function () {
 		if ($scope.user1_profile.trim() == '' ||  $scope.user2_profile.trim() == '') {
@@ -80,6 +90,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 					$scope.user1 = resp.data.user1;
 					$scope.user2 = resp.data.user2;
 					$scope.sharedGames = resp.data.sharedGames;
+					$scope.allCategories = resp.data.categories;
 
 					$scope.loading = false;
 				} else {
@@ -104,8 +115,8 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 			inFilter = (game.user1PlayTime == 0 && game.user2PlayTime == 0);
 		}
 
-		if (inFilter && $scope.filter.multiplayer) {
-			inFilter = hasCategories(game, $scope.multiplayerCategories)
+		if (inFilter) {
+			inFilter = hasCategories(game, $scope.filter.categories)
 		}
 		return inFilter;
 	}
@@ -156,16 +167,18 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 	}
 
 	function hasCategories(game, categories) {
+		if (!categories || categories.length == 0) {
+			return true;
+		}
+
 		if (!game.details || !game.details.categories) {
 			return false;
 		}
 
-		for (var i = 0; i < game.details.categories.length; i++) {
-			var category = game.details.categories[i];
-			for (var j = 0; j < $scope.multiplayerCategories.length; j++) {
-				if ($scope.multiplayerCategories[j].id == category.id) {
-					return true;
-				}
+		for (var i = 0; i < categories.length; i++) {
+			var category = categories[i];
+			if (game.details.categories.some( cat => cat['id'] + '' === category)) {
+				return true;
 			}
 		}
 		return false;

@@ -20,17 +20,18 @@ router.get('/getGames/:query', function (req, res) {
 
 	getId(query.url1, function (id1) {
 		getUserGames(id1, function (user1) {
-			var users = {
+			var gameData = {
 				'user1': user1,
 				'user2': ''
 			}
 
 			getId(query.url2, function (id2) {
 				getUserGames(id2, function (user2) {
-					users.user2 = user2;
+					gameData.user2 = user2;
 					getSharedGames(user1.games, user2.games, function (sharedGames) {
-						users.sharedGames = sharedGames;
-						res.send(JSON.stringify(users));
+						gameData.sharedGames = sharedGames;
+						gameData.categories = getCategories(sharedGames);
+						res.send(JSON.stringify(gameData));
 					}, function (error) {
 						sendError(res, 500, error);
 					});
@@ -166,6 +167,24 @@ function hasGame(game, gameList) {
 		}
 	}
 	return null;
+}
+
+function getCategories(games) {
+	var allCategories = [];
+
+	for (var i = 0; i < games.length; i++) {
+		var game = games[i];
+		if (game.details && game.details.categories) {
+			for (var j = 0; j < game.details.categories.length; j++) {
+				var category = game.details.categories[j];
+				if (!allCategories.some( cat => cat['id'] === category.id)) {
+					allCategories.push(category);
+				}
+			}
+		}
+	}
+
+	return allCategories;
 }
 
 app.use('/steam', router);

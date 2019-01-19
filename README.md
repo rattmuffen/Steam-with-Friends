@@ -18,6 +18,7 @@ Frontend:
 * [popper.js](https://popper.js.org)
 * [bootstrap](https://getbootstrap.com/)
 * [FontAwesome](https://fontawesome.com/)
+* [Selectize.js](https://selectize.github.io/selectize.js/) with [angular-selectize](https://github.com/machineboy2045/angular-selectize) directive.
 
 ## Requirements
 

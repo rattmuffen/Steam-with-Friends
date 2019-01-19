@@ -53,3 +53,12 @@
 .categoryList {
 	margin-bottom: 5px;
 }
+
+#categoryButtonsRow {
+	padding-left: 5px;
+  padding-top: 10px;
+}
+
+#categoryButtonsRow > button {
+	margin-left: 10px;
+}

@@ -7,10 +7,12 @@
 		<title>Steam with Friends</title>
 
 		<!-- Scripts -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/js/standalone/selectize.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/machineboy2045-angular-selectize2/3.0.1/angular-selectize.min.js"></script>
 
 		<script type="text/javascript" src="js/main.js"></script>
 
@@ -18,11 +20,13 @@
 		<!--[if lt IE 9]>
 			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+			<script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.0.8/es5-shim.min.js">
 		<![endif]-->
 
 		<!-- Stylesheets -->
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 
@@ -57,7 +61,7 @@
 				</div>
 				<div class="card-body">
 					<p class="card-text">
-						Input two different users Steam community profile names and press that big blue button!
+						Input two different users Steam community profile names (or IDs) and press that big blue button!
 					</p>
 					<p>
 						<b>Note!</b>
@@ -80,12 +84,12 @@
 									</a>
 								</div>
 								<div class="invalid-feedback">
-									<i class="fa fa-times"></i> Please input a valid public Steam Community profile name!
+									<i class="fa fa-times"></i> Please input a valid public Steam Community profile name or ID!
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="user2Input">Profile name for second user</label>
+							<label for="user2Input">Profile name or ID for second user</label>
 							<div class="input-group">
 								<div class="input-group-prepend">
 									<span class="input-group-text" id="urlPrepend2">{{STEAM_BASE_URL}}</span>
@@ -97,7 +101,7 @@
 									</a>
 								</div>
 								<div class="invalid-feedback">
-									<i class="fa fa-times"></i> Please input a valid public Steam Community profile name
+									<i class="fa fa-times"></i> Please input a valid public Steam Community profile name or ID!
 								</div>
 							</div>
 						</div>
@@ -181,14 +185,27 @@
 						</div>
 					</form>
 					<hr>
+					<div id="categoryFormGroup" class="form-group">
+						<label for="categorySelect">Game categories</label>
+						<selectize id="categorySelect" config='selectizeConfig' options='allCategories' ng-model="filter.categories">
+						</selectize>
+						<div id="categoryButtonsRow" class="row">
+							<button class="btn btn-outline-secondary btn-sm" ng-click="filter.categories = multiplayerCategories">
+								<i class="fas fa-user-friends"></i>
+								Multiplayer categories
+							</button>
+							<button class="btn btn-secondary btn-sm" ng-click="filter.categories = []">
+								<i class="fas fa-times"></i>
+								Reset categories filter
+							</button>
+						</div>
+					</div>
+					<hr>
 					<div class="custom-control custom-switch">
 					  <input type="checkbox" class="custom-control-input" id="unplayedSwitch" ng-model="filter.unplayed" ng-click="saveSettings()">
 					  <label class="custom-control-label" for="unplayedSwitch">Show only games neither has played</label>
 					</div>
-					<div class="custom-control custom-switch">
-					  <input type="checkbox" class="custom-control-input" id="multiplayerSwitch" ng-model="filter.multiplayer" ng-click="saveSettings()">
-					  <label class="custom-control-label" for="multiplayerSwitch">Show only multiplayer games</label>
-					</div>
+
 					<small>{{getFilteredGames(sharedGames).length}} games in current filter</small>
 				</div>
 				<div class="list-group list-group-flush list-group-striped">
@@ -215,7 +232,7 @@
 									{{game.details.short_description}}
 							</small>
 							<ul class="list-inline categoryList">
-							  <li ng-repeat="category in game.details.categories"class="list-inline-item">
+							  <li ng-repeat="category in game.details.categories | orderBy:'description'"class="list-inline-item">
 									<small><span class="badge badge-light">{{category.description}}</span></small>
 								</li>
 							</ul>
