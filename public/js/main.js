@@ -37,6 +37,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 	$scope.filter = {
 		unplayed: false,
 		multiplayer: false,
+		categoriesAnd: false,
 		categories: []
 	};
 
@@ -53,6 +54,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 	$scope.reverse = false;
 
 	$scope.multiplayerCategories = [ '9', '1' , '27', '38' ];
+	$scope.controllerCategories = [ '18', '28' ];
 	$scope.selectizeConfig = {
 		plugins: ['remove_button'],
 		create: false,
@@ -175,12 +177,22 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 			return false;
 		}
 
-		for (var i = 0; i < categories.length; i++) {
-			var category = categories[i];
-			if (game.details.categories.some( cat => cat['id'] + '' === category)) {
-				return true;
+		if ($scope.filter.categoriesAnd) {
+			for (var i = 0; i < categories.length; i++) {
+				var category = categories[i];
+				if (!game.details.categories.some( cat => cat['id'] + '' === category)) {
+					return false;
+				}
 			}
+			return true;
+		} else {
+			for (var i = 0; i < categories.length; i++) {
+				var category = categories[i];
+				if (game.details.categories.some( cat => cat['id'] + '' === category)) {
+					return true;
+				}
+			}
+			return false;
 		}
-		return false;
 	}
 });

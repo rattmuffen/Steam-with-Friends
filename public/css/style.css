@@ -59,6 +59,7 @@
   padding-top: 10px;
 }
 
+#categoryButtonsRow > .custom-switch,
 #categoryButtonsRow > button {
 	margin-left: 10px;
 }
