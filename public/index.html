@@ -185,27 +185,65 @@
 						</div>
 					</form>
 					<hr>
-					<div id="categoryFormGroup" class="form-group">
-						<label for="categorySelect">Game categories</label>
-						<selectize id="categorySelect" config='selectizeConfig' options='allCategories' ng-model="filter.categories">
-						</selectize>
-						<div id="categoryButtonsRow" class="row">
-							<div class="custom-control custom-switch">
-							  <input type="checkbox" class="custom-control-input" id="categoriesAndSwitch" ng-model="filter.categoriesAnd" ng-click="saveSettings()">
-							  <label class="custom-control-label" for="categoriesAndSwitch">Must match all selected categories</label>
+					<div class="accordion" id="filterAccordion">
+						<button class="btn btn-sm btn-block btn-outline-secondary" type="button" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+							<i class="fas fa-filter"></i>
+							Filter games...
+						</button>
+						<div id="filterCollapse" class="collapse" aria-labelledby="headingOne" data-parent="#filterAccordion">
+							<div id="categoryFormGroup" class="form-group">
+								<label for="categorySelect">Categories</label>
+								<selectize id="categorySelect" config='selectizeCategoryConfig' options='allCategories' ng-model="filter.categories">
+								</selectize>
+								<div id="categoryButtonsRow" class="row filterRow">
+									<div class="custom-control custom-switch">
+										<input type="checkbox" class="custom-control-input" id="categoriesAndSwitch" ng-model="filter.categoriesAnd" ng-click="saveSettings()">
+										<label class="custom-control-label" for="categoriesAndSwitch">Must match all selected categories</label>
+									</div>
+									<button class="btn btn-outline-secondary btn-sm" ng-click="filter.categories = multiplayerCategories">
+										<i class="fas fa-user-friends"></i>
+										Multiplayer games
+									</button>
+									<button class="btn btn-outline-secondary btn-sm" ng-click="filter.categories = controllerCategories">
+										<i class="fas fa-gamepad"></i>
+										Games with controller support
+									</button>
+									<button class="btn btn-secondary btn-sm" ng-click="filter.categories = []">
+										<i class="fas fa-times"></i>
+										Reset filter
+									</button>
+								</div>
 							</div>
-							<button class="btn btn-outline-secondary btn-sm" ng-click="filter.categories = multiplayerCategories">
-								<i class="fas fa-user-friends"></i>
-								Multiplayer games
-							</button>
-							<button class="btn btn-outline-secondary btn-sm" ng-click="filter.categories = controllerCategories">
-								<i class="fas fa-gamepad"></i>
-								Games with controller support
-							</button>
-							<button class="btn btn-secondary btn-sm" ng-click="filter.categories = []">
-								<i class="fas fa-times"></i>
-								Reset filter
-							</button>
+							<div id="genreFormGroup" class="form-group">
+								<label for="genreSelect">Genres</label>
+								<selectize id="genreSelect" config='selectizeGenreConfig' options='allGenres' ng-model="filter.genres">
+								</selectize>
+								<div id="genreButtonsRow" class="row filterRow">
+									<div class="custom-control custom-switch">
+									  <input type="checkbox" class="custom-control-input" id="genresAndSwitch" ng-model="filter.genresAnd" ng-click="saveSettings()">
+									  <label class="custom-control-label" for="genresAndSwitch">Must match all selected genres</label>
+									</div>
+									<button class="btn btn-secondary btn-sm" ng-click="filter.genres = []">
+										<i class="fas fa-times"></i>
+										Reset filter
+									</button>
+								</div>
+							</div>
+							<div id="developerFormGroup" class="form-group">
+								<label for="developerSelect">Developers</label>
+								<selectize id="developerSelect" config='selectizeDeveloperConfig' options='allDevelopers' ng-model="filter.developers">
+								</selectize>
+								<div id="developerButtonsRow" class="row filterRow">
+									<div class="custom-control custom-switch">
+									  <input type="checkbox" class="custom-control-input" id="developersAndSwitch" ng-model="filter.developersAnd" ng-click="saveSettings()">
+									  <label class="custom-control-label" for="developersAndSwitch">Must match all selected developers</label>
+									</div>
+									<button class="btn btn-secondary btn-sm" ng-click="filter.developers = []">
+										<i class="fas fa-times"></i>
+										Reset filter
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<hr>

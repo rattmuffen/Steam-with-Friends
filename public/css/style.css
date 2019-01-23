@@ -54,12 +54,16 @@
 	margin-bottom: 5px;
 }
 
-#categoryButtonsRow {
+.filterRow {
 	padding-left: 5px;
   padding-top: 10px;
 }
 
-#categoryButtonsRow > .custom-switch,
-#categoryButtonsRow > button {
+.filterRow > .custom-switch,
+.filterRow > button {
 	margin-left: 10px;
+}
+
+#filterCollapse {
+	padding-top: 15px;
 }

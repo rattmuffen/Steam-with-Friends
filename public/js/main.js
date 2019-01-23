@@ -28,6 +28,8 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 
 	$scope.sharedGames = [];
 	$scope.allCategories = [];
+	$scope.allGenres = [];
+	$scope.allDevelopers = [];
 	$scope.errorCode = '';
 	$scope.errorDetails = '';
 	$scope.loading = false;
@@ -38,7 +40,11 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 		unplayed: false,
 		multiplayer: false,
 		categoriesAnd: false,
-		categories: []
+		categories: [],
+		genresAnd: false,
+		genres: [],
+		developersAnd: false,
+		developers: []
 	};
 
 	$scope.sortTypes = [
@@ -55,7 +61,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 
 	$scope.multiplayerCategories = [ '9', '1' , '27', '38' ];
 	$scope.controllerCategories = [ '18', '28' ];
-	$scope.selectizeConfig = {
+	$scope.selectizeCategoryConfig = {
 		plugins: ['remove_button'],
 		create: false,
 		sortField: {field: 'description'},
@@ -65,6 +71,34 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 		placeholder: "Select categories",
 		dataAttr: 'description',
 		labelField: 'description',
+		maxItems: null,
+		closeAfterSelect: true
+	}
+
+	$scope.selectizeGenreConfig = {
+		plugins: ['remove_button'],
+		create: false,
+		sortField: {field: 'description'},
+		valueField: 'id',
+		searchField: 'description',
+		selectOnTab: true,
+		placeholder: "Select genres",
+		dataAttr: 'description',
+		labelField: 'description',
+		maxItems: null,
+		closeAfterSelect: true
+	}
+
+	$scope.selectizeDeveloperConfig = {
+		plugins: ['remove_button'],
+		create: false,
+		sortField: {field: 'item'},
+		valueField: 'item',
+		searchField: 'item',
+		selectOnTab: true,
+		placeholder: "Select genres",
+		dataAttr: 'item',
+		labelField: 'item',
 		maxItems: null,
 		closeAfterSelect: true
 	}
@@ -93,6 +127,8 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 					$scope.user2 = resp.data.user2;
 					$scope.sharedGames = resp.data.sharedGames;
 					$scope.allCategories = resp.data.categories;
+					$scope.allGenres = resp.data.genres;
+					$scope.allDevelopers = resp.data.developers;
 
 					$scope.loading = false;
 				} else {
@@ -118,7 +154,11 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 		}
 
 		if (inFilter) {
-			inFilter = hasCategories(game, $scope.filter.categories)
+
+			inFilter = hasProperty(game, $scope.filter.categories, 'categories', 'id', $scope.filter.categoriesAnd)
+				&& hasProperty(game, $scope.filter.genres, 'genres', 'id', $scope.filter.genresAnd)
+				&& hasProperty(game, $scope.filter.developers, 'developers', null, $scope.filter.developersAnd)
+
 		}
 		return inFilter;
 	}
@@ -168,27 +208,27 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 		}
 	}
 
-	function hasCategories(game, categories) {
-		if (!categories || categories.length == 0) {
+	function hasProperty(game, properties, field, idField, mustMatchAll) {
+		if (!properties || properties.length == 0) {
 			return true;
 		}
 
-		if (!game.details || !game.details.categories) {
+		if (!game.details || !game.details[field]) {
 			return false;
 		}
 
-		if ($scope.filter.categoriesAnd) {
-			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i];
-				if (!game.details.categories.some( cat => cat['id'] + '' === category)) {
+		if (mustMatchAll) {
+			for (var i = 0; i < properties.length; i++) {
+				var property = properties[i];
+				if (!game.details[field].some( cat => (idField ? cat[idField] + '' : cat) === property)) {
 					return false;
 				}
 			}
 			return true;
 		} else {
-			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i];
-				if (game.details.categories.some( cat => cat['id'] + '' === category)) {
+			for (var i = 0; i < properties.length; i++) {
+				var property = properties[i];
+				if (game.details[field].some( cat => (idField ? cat[idField] + '' : cat) === property)) {
 					return true;
 				}
 			}

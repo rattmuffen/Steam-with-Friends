@@ -30,7 +30,9 @@ router.get('/getGames/:query', function (req, res) {
 					gameData.user2 = user2;
 					getSharedGames(user1.games, user2.games, function (sharedGames) {
 						gameData.sharedGames = sharedGames;
-						gameData.categories = getCategories(sharedGames);
+						gameData.categories = getData(sharedGames, 'categories', 'id');
+						gameData.genres = getData(sharedGames, 'genres', 'id');
+						gameData.developers = getData(sharedGames, 'developers', null);
 						res.send(JSON.stringify(gameData));
 					}, function (error) {
 						sendError(res, 500, error);
@@ -169,22 +171,29 @@ function hasGame(game, gameList) {
 	return null;
 }
 
-function getCategories(games) {
-	var allCategories = [];
+function getData(games, field, idField) {
+	var allData = [];
 
 	for (var i = 0; i < games.length; i++) {
 		var game = games[i];
-		if (game.details && game.details.categories) {
-			for (var j = 0; j < game.details.categories.length; j++) {
-				var category = game.details.categories[j];
-				if (!allCategories.some( cat => cat['id'] === category.id)) {
-					allCategories.push(category);
+		if (game.details && game.details[field]) {
+			for (var j = 0; j < game.details[field].length; j++) {
+				var item = game.details[field][j];
+
+				if (idField) {
+					if (!allData.some( cat => cat[idField] === item[idField])) {
+						allData.push(item);
+					}
+				} else {
+					if (!allData.some( cat => cat === item)) {
+						allData.push({'item': item});
+					}
 				}
 			}
 		}
 	}
 
-	return allCategories;
+	return allData;
 }
 
 app.use('/steam', router);
