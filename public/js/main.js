@@ -96,7 +96,7 @@ app.controller('steamCtrl', function ($scope, $window, $http) {
 		valueField: 'item',
 		searchField: 'item',
 		selectOnTab: true,
-		placeholder: "Select genres",
+		placeholder: "Select developers",
 		dataAttr: 'item',
 		labelField: 'item',
 		maxItems: null,
