@@ -4,3 +4,8 @@ Thumbs.db
 /conf
 package-lock.json
 /data
+
+/backend/node_modules
+/backend/conf
+
+/client/node_modules

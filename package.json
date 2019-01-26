@@ -1,17 +1,12 @@
 {
     "name": "steam-with-friends",
-    "main": "/public/index.html",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "mongodb": "latest",
-        "express": "^4.16.4",
-        "steamapi": "latest",
-        "async": "latest",
-        "moment": "latest"
+        "concurrently": "^4.0.1"
     },
     "scripts": {
-        "start": "node app.js"
+        "start": "concurrently \"cd backend && npm install && node app.js\" \"cd client && npm install && npm start\""
     },
     "engines": {
         "node": "10.x"
